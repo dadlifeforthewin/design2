@@ -57,6 +57,7 @@ import {
 } from '../runtime/exports';
 import { buildReactComponentSrcdoc } from '../runtime/react-component';
 import { buildSrcdoc } from '../runtime/srcdoc';
+import { KnobsPanel } from './KnobsPanel';
 import { parseForceInline, shouldUrlLoadHtmlPreview } from './file-viewer-render-mode';
 import { saveTemplate } from '../state/projects';
 import type {
@@ -3919,6 +3920,7 @@ function HtmlViewer({
       editBridge: manualEditMode,
       paletteBridge: true,
       initialPalette: selectedPalette,
+      knobsBridge: true,
     }) : ''),
     [previewSource, effectiveDeck, projectId, file.name, previewStateKey, boardMode, manualEditMode, drawClickSelectionMode, inspectMode, selectedPalette],
   );
@@ -5637,6 +5639,16 @@ function HtmlViewer({
                     />
                   )}
                 </PreviewDrawOverlay>
+                {!useUrlLoadPreview ? (
+                  <KnobsPanel
+                    onKnobChange={(payload) => {
+                      iframeRef.current?.contentWindow?.postMessage(
+                        { type: 'od:knobs:set', cssVar: payload.cssVar, value: payload.value },
+                        '*',
+                      );
+                    }}
+                  />
+                ) : null}
               </div>
             </div>
             {(boardMode || drawClickSelectionMode) ? (
