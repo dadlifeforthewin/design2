@@ -20,6 +20,8 @@ import {
   MANUAL_EDIT_DISCOVERY_SELECTOR,
   MANUAL_EDIT_SOURCE_PATH_ATTR,
 } from '../edit-mode/bridge';
+import { injectKnobsBridge } from './knobs-bridge';
+import type { KnobValues } from './knobs-types';
 
 export type SrcdocOptions = {
   deck?: boolean;
@@ -30,6 +32,8 @@ export type SrcdocOptions = {
   editBridge?: boolean;
   paletteBridge?: boolean;
   initialPalette?: string | null;
+  knobsBridge?: boolean;
+  initialKnobs?: KnobValues | null;
 };
 
 export function buildSrcdoc(
@@ -69,7 +73,10 @@ export function buildSrcdoc(
   const withPalette = options.paletteBridge
     ? injectPaletteBridge(withSelection, { initialPalette: options.initialPalette ?? null })
     : withSelection;
-  const withEdit = options.editBridge ? injectManualEditBridge(withPalette) : withPalette;
+  const withKnobs = options.knobsBridge
+    ? injectKnobsBridge(withPalette, { initialKnobs: options.initialKnobs ?? null })
+    : withPalette;
+  const withEdit = options.editBridge ? injectManualEditBridge(withKnobs) : withKnobs;
   return injectSnapshotBridge(withEdit);
 }
 
